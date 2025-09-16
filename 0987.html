@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>NETS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --main-red: #d60000;
+            --text-black: #222;
+        }
+
+        body {
+            background-color: white;
+            color: var(--text-black);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 30px 15px;
+        }
+
+        form {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--text-black);
+            margin-bottom: 10px;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-black);
+        }
+
+        input,
+        select,
+        textarea {
+            padding: 12px;
+            border: 1px solid var(--main-red);
+            border-radius: 5px;
+            background: white;
+            color: var(--text-black);
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #888;
+        }
+
+        button {
+            padding: 12px;
+            background-color: var(--main-red);
+            color: white;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #a50000;
+        }
+
+        #status-message {
+            font-size: 1em;
+            font-weight: 500;
+            margin-top: 10px;
+            text-align: center;
+            padding: 12px 15px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .success {
+            background-color: #e8f9f0;
+            color: #1e7d42;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            display: block;
+        }
+
+        .error {
+            background-color: #fde8e8;
+            color: #c50000;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            display: block;
+        }
+
+        @media (max-width: 500px) {
+            body {
+                padding: 20px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<form id="nets-form">
+    <div class="title">NETS</div>
+
+    <label for="name">ФИО</label>
+    <input type="text" id="name" name="name" required placeholder="Введите ФИО">
+
+    <label for="router">Роутер:</label>
+    <select id="router" name="router" required>
+        <option value="">-- Выберите вариант --</option>
+        <option>В рассрочку</option>
+        <option>Вместе с подключением</option>
+    </select>
+
+    <label for="phone">Номер телефона</label>
+    <input type="tel" id="phone" name="phone" required placeholder="+992 XXX XXX XXX">
+
+    <label for="tariff">Выберите тариф</label>
+    <select id="tariff" name="tariff" required>
+        <option value="">-- Выберите тариф --</option>
+        <option>Тамошо 5 - 100 смн</option>
+        <option>Оилаи ҷавон - 155 смн</option>
+        <option>Тамошо 15 - 180 смн</option>
+        <option>Тамошо 20 - 200 смн</option>
+        <option>Тамошо 30 - 300 смн</option>
+        <option>Тамошо 50 - 500 смн</option>
+    </select>
+
+    <label for="address">Адрес</label>
+    <textarea id="address" name="address" rows="3" required placeholder="Например: г. Душанбе, ул. Рудаки, д. 25"></textarea>
+
+    <label for="promoter">Имя промоутера</label>
+    <input type="text" id="promoter" name="promoter" placeholder="Введите имя промоутера">
+
+    <!-- Новые кнопки -->
+    <label>Фото паспорта</label>
+    <input type="file" id="passportFront" accept="image/*" capture="environment">
+    <input type="file" id="passportBack" accept="image/*" capture="environment">
+
+    <button type="submit">Отправить</button>
+    <div id="status-message"></div>
+</form>
+
+<script>
+    document.getElementById('nets-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const statusMessage = document.getElementById('status-message');
+        statusMessage.textContent = 'Отправка...';
+        statusMessage.className = '';
+        statusMessage.style.display = "block";
+
+        const name = document.getElementById('name').value.trim();
+        const router = document.getElementById('router').value;
+        const phone = document.getElementById('phone').value.trim();
+        const tariff = document.getElementById('tariff').value;
+        const address = document.getElementById('address').value.trim();
+        const promoter = document.getElementById('promoter').value.trim();
+
+        const passportFront = document.getElementById('passportFront').files[0];
+        const passportBack = document.getElementById('passportBack').files[0];
+
+        if (!passportFront || !passportBack) {
+            statusMessage.textContent = '❌ Загрузите обе стороны паспорта!';
+            statusMessage.className = 'error';
+            return;
+        }
+
+        const message = `
+📥 Новая заявка NETS:
+👤 ФИО: ${name}
+🛜 Роутер: ${router}
+📞 Телефон: ${phone}
+📦 Тариф: ${tariff}
+📍 Адрес:\n${address}
+🧑‍💼 Промоутер: ${promoter || 'Не указан'}
+        `;
+
+        const token = '8289351698:AAHUUc-gZONjZUON5f8elW3YEbK24_03Pag'; 
+        const chatId = '7849292154'; 
+
+        const formData = new FormData();
+        formData.append('chat_id', chatId);
+        formData.append('caption', message);
+        formData.append('media', JSON.stringify([
+            { type: "photo", media: "attach://front" },
+            { type: "photo", media: "attach://back" }
+        ]));
+        formData.append('front', passportFront);
+        formData.append('back', passportBack);
+
+        fetch(`https://api.telegram.org/bot${token}/sendMediaGroup`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                statusMessage.textContent = '✅ Заявка успешно отправлена!';
+                statusMessage.className = 'success';
+                document.getElementById('nets-form').reset();
+            } else {
+                statusMessage.textContent = '❌ Ошибка при отправке. Попробуйте позже.';
+                statusMessage.className = 'error';
+            }
+        })
+        .catch(error => {
+            statusMessage.textContent = '❌ Ошибка соединения с Telegram.';
+            statusMessage.className = 'error';
+            console.error(error);
+        });
+    });
+</script>
+
+</body>
+</html>
