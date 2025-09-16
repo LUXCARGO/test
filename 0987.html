@@ -188,9 +188,8 @@
 
         const formData = new FormData();
         formData.append('chat_id', chatId);
-        formData.append('caption', message);
         formData.append('media', JSON.stringify([
-            { type: "photo", media: "attach://front" },
+            { type: "photo", media: "attach://front", caption: message },
             { type: "photo", media: "attach://back" }
         ]));
         formData.append('front', passportFront);
@@ -200,14 +199,16 @@
             method: 'POST',
             body: formData
         })
-        .then(response => {
-            if (response.ok) {
+        .then(response => response.json())
+        .then(data => {
+            if (data.ok) {
                 statusMessage.textContent = '✅ Заявка успешно отправлена!';
                 statusMessage.className = 'success';
                 document.getElementById('nets-form').reset();
             } else {
-                statusMessage.textContent = '❌ Ошибка при отправке. Попробуйте позже.';
+                statusMessage.textContent = '❌ Ошибка при отправке.';
                 statusMessage.className = 'error';
+                console.error(data);
             }
         })
         .catch(error => {
