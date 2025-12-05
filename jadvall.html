@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta id="theme-color-meta" name="theme-color" content="#050398">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NY5RDDQJJE"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-NY5RDDQJJE');
+    </script>
+
+    <link rel="manifest" href="/static/manifest.json">
+    <title data-lang="page_title">Расписание | ХГУ имени академика Б. Гафурова</title>
+    <!-- ИЗМЕНЕНО: Ссылка на иконку (favicon) -->
+    <link rel="icon" href="https://i.ibb.co/GmCt1W0/hgu.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --text-color: #1f2937;
+            --card-bg: #ffffff;
+            --header-bg: #ffffff;
+            --select-bg: #ffffff;
+            --select-border: #d1d5db;
+            --placeholder-bg: #ffffff;
+            --footer-bg: #ffffff;
+            --footer-border: #e5e7eb;
+            --text-muted: #6b7280;
+            --shadow-color: rgb(0 0 0 / 0.1);
+            --highlight-bg: #fef9c3; /* Amber-100 */
+            --highlight-border: #f59e0b; /* Amber-500 */
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #111827;
+            --text-color: #d1d5db;
+            --card-bg: #1f2937;
+            --header-bg: #1f2937;
+            --select-bg: #374151;
+            --select-border: #4b5563;
+            --placeholder-bg: #1f2937;
+            --footer-bg: #1f2937;
+            --footer-border: #374151;
+            --text-muted: #9ca3af;
+            --shadow-color: rgb(0 0 0 / 0.5);
+            --highlight-bg: #4a330e; /* Dark Amber */
+            --highlight-border: #f59e0b; /* Amber-500 */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -2px var(--shadow-color);
+            transition: all 0.3s ease-in-out;
+        }
+        .select-input, .text-input {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-position: right 0.75rem center;
+            background-repeat: no-repeat;
+            background-size: 1.25em;
+            padding-right: 2.5rem;
+            background-color: var(--select-bg);
+            border-color: var(--select-border);
+            color: var(--text-color);
+        }
+        .select-input {
+             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E");
+        }
+        header, footer {
+            background-color: var(--header-bg);
+            transition: background-color 0.3s;
+        }
+        footer {
+            border-top-color: var(--footer-border);
+        }
+        #placeholder {
+            background-color: var(--placeholder-bg);
+        }
+        .loader {
+            border: 4px solid #4b5563;
+            border-top: 4px solid #3B82F6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1.5s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .hidden { display: none; }
+        .skeleton {
+            background-color: #374151;
+            border-radius: 0.5rem;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            50% { opacity: .5; }
+        }
+        .control-btn {
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: var(--select-bg);
+            color: var(--text-color);
+        }
+        .lang-btn.active {
+            background-color: #3B82F6;
+            color: white;
+            border-color: #3B82F6;
+        }
+        #mobile-menu, #report-modal-container {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease-in-out;
+        }
+        #mobile-menu.is-visible, #report-modal-container.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .menu-panel, .modal-panel {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        #report-modal-container.is-visible .modal-panel {
+             transform: scale(1);
+             opacity: 1;
+        }
+        .modal-panel {
+            transform: scale(0.95);
+            opacity: 0;
+            transition: all 0.3s ease-in-out;
+        }
+        #mobile-menu.is-visible .menu-panel {
+            transform: translateX(0);
+        }
+        .tab-btn.active {
+            border-bottom-color: #3B82F6;
+            color: #3B82F6;
+            font-weight: 600;
+        }
+        .tab-btn {
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease-in-out;
+        }
+        .report-btn {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 30;
+            background-color: #f59e0b; /* Amber 500 */
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease-in-out;
+        }
+        .report-btn:hover {
+            background-color: #d97706; /* Amber 600 */
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        <header class="shadow-md sticky top-0 z-20">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center" style="background-color: var(--header-bg);">
+                <div class="flex items-center space-x-3">
+                    <img src="https://i.ibb.co/GmCt1W0/hgu.png" alt="Логотип ХГУ" class="h-12 w-12 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/50x50/cccccc/ffffff?text=Error';">
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold" data-lang="university_name">ХГУ имени Б. Гафурова</h1>
+                        <p class="text-sm" style="color: var(--text-muted);" data-lang="university_subtitle">Электронное расписание</p>
+                    </div>
+                </div>
+                <!-- Desktop Controls -->
+                <div class="hidden md:flex items-center space-x-2">
+                    <button id="theme-switcher-desktop" class="control-btn">
+                        <svg id="theme-icon-light-desktop" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                        <svg id="theme-icon-dark-desktop" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                    </button>
+                    <button id="lang-ru-desktop" class="control-btn lang-btn px-3">RU</button>
+                    <button id="lang-tj-desktop" class="control-btn lang-btn px-3">TJ</button>
+                    <button id="lang-en-desktop" class="control-btn lang-btn px-3">EN</button>
+                </div>
+                <!-- Mobile Burger Button -->
+                <button id="burger-btn" class="md:hidden control-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                </button>
+            </div>
+        </header>
+
+        <main class="container mx-auto p-4 md:p-6">
+            <div id="maintenance-notice" class="hidden text-center py-20 px-6 rounded-lg shadow-md max-w-2xl mx-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-24 w-24 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <h2 class="text-3xl font-bold mt-6 text-gray-800">Корҳои техникӣ</h2>
+                <p class="mt-4 text-lg text-gray-600">Дар сомонаи ҷадвали электронӣ барои факултети ТТИ муваққатан корҳои техникӣ рафта истодааст!</p>
+                <p class="mt-2 text-md text-gray-500">Барои нороҳатии муваққатӣ маъзарат мехоҳем!!!</p>
+            </div>
+
+            <div id="main-content" class="">
+                <div class="card p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-4" data-lang="search_title">Поиск расписания</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                            <label for="faculty" class="block text-sm font-medium mb-1" data-lang="faculty_label">Факультет</label>
+                            <select id="faculty" class="select-input w-full p-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"></select>
+                        </div>
+                        <div>
+                            <label for="specialty" class="block text-sm font-medium mb-1" data-lang="specialty_label">Специальность</label>
+                            <select id="specialty" class="select-input w-full p-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" disabled></select>
+                        </div>
+                        <div>
+                            <label for="course" class="block text-sm font-medium mb-1" data-lang="course_label">Курс</label>
+                            <select id="course" class="select-input w-full p-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" disabled></select>
+                        </div>
+                        <div>
+                            <label for="group" class="block text-sm font-medium mb-1" data-lang="group_label">Группа</label>
+                            <select id="group" class="select-input w-full p-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" disabled></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="schedule-display-area" class="hidden">
+                     <h3 id="schedule-title" class="text-2xl font-bold text-center mb-4"></h3>
+                     <!-- Tabs -->
+                    <div class="flex justify-center mb-6">
+                        <div class="border-b" style="border-color: var(--select-border);">
+                            <nav class="-mb-px flex space-x-6">
+                                <button id="tab-lessons" class="tab-btn whitespace-nowrap py-2 px-4 text-sm font-medium" data-lang="lessons_tab">Занятия</button>
+                                <button id="tab-exams" class="tab-btn whitespace-nowrap py-2 px-4 text-sm font-medium" data-lang="exams_tab">Экзамены</button>
+                            </nav>
+                        </div>
+                    </div>
+
+                    <div id="schedule-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                    <div id="exams-container" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+
+                <div id="placeholder" class="text-center py-16 px-6 rounded-lg shadow-md"></div>
+            </div>
+        </main>
+
+        <footer class="mt-8 py-4 border-t">
+            <div class="container mx-auto px-4 text-center text-sm">
+                <p>&copy; <span id="current-year"></span> <span data-lang="footer_text">Худжандский государственный университет имени академика Б. Гафурова. Все права защищены.</span></p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed inset-0 bg-black bg-opacity-50 z-40">
+        <div class="menu-panel absolute top-4 right-4 w-full max-w-xs">
+            <div class="p-5 rounded-lg shadow-lg flex flex-col items-center space-y-4" style="background-color: var(--card-bg);">
+                 <div class="w-full flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold" data-lang="menu_title">Настройки</h3>
+                    <button id="close-menu-btn" class="control-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+
+                <div class="w-full">
+                    <p class="text-sm font-medium mb-2" style="color: var(--text-muted);" data-lang="theme_title">Тема</p>
+                    <button id="theme-switcher-mobile" class="control-btn w-full">
+                        <svg id="theme-icon-light-mobile" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                        <svg id="theme-icon-dark-mobile" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                        <span class="ml-2" data-lang="theme_toggle">Сменить тему</span>
+                    </button>
+                </div>
+
+                 <div class="w-full">
+                    <p class="text-sm font-medium mb-2" style="color: var(--text-muted);" data-lang="language_title">Язык</p>
+                    <div class="flex justify-around w-full">
+                        <button id="lang-ru-mobile" class="control-btn lang-btn flex-1">RU</button>
+                        <button id="lang-tj-mobile" class="control-btn lang-btn flex-1 mx-2">TJ</button>
+                        <button id="lang-en-mobile" class="control-btn lang-btn flex-1">EN</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Error Button -->
+    <button id="report-error-btn" class="report-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" x2="4" y1="22" y2="15"></line></svg>
+        <span data-lang="report_error_button">Хатогӣ дар ҷадвал?</span>
+    </button>
+
+    <!-- Report Error Modal -->
+    <div id="report-modal-container" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4">
+        <div class="modal-panel w-full max-w-lg rounded-lg shadow-xl" style="background-color: var(--card-bg);">
+            <div id="report-form-view">
+                <div class="p-6 border-b" style="border-color: var(--footer-border);">
+                    <h3 class="text-xl font-semibold" data-lang="report_modal_title">Сообщить об ошибке</h3>
+                </div>
+                <form id="report-form" class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+                    <!-- Error context selects -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="report-faculty" class="block text-sm font-medium mb-1" data-lang="report_faculty_label">Факультет</label>
+                            <select id="report-faculty" required class="w-full p-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition select-input"></select>
+                        </div>
+                        <div>
+                            <label for="report-specialty" class="block text-sm font-medium mb-1" data-lang="report_specialty_label">Специальность</label>
+                            <select id="report-specialty" required class="w-full p-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition select-input" disabled></select>
+                        </div>
+                        <div>
+                            <label for="report-course" class="block text-sm font-medium mb-1" data-lang="report_course_label">Курс</label>
+                            <select id="report-course" required class="w-full p-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition select-input" disabled></select>
+                        </div>
+                        <div>
+                            <label for="report-group" class="block text-sm font-medium mb-1" data-lang="report_group_label">Группа</label>
+                            <select id="report-group" required class="w-full p-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition select-input" disabled></select>
+                        </div>
+                    </div>
+                    <!-- Error details -->
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="report-day" class="block text-sm font-medium mb-1" data-lang="report_day_label">День недели</label>
+                            <select id="report-day" required class="w-full p-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition select-input"></select>
+                        </div>
+                        <div>
+                            <label for="report-lesson" class="block text-sm font-medium mb-1" data-lang="report_lesson_label">Номер урока</label>
+                            <input type="number" id="report-lesson" required min="1" max="8" class="w-full p-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-input">
+                        </div>
+                    </div>
+                    <!-- User details -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                       <div>
+                            <label for="report-fullname" class="block text-sm font-medium mb-1" data-lang="report_fullname_label">ФИО</label>
+                            <input type="text" id="report-fullname" required class="w-full p-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-input">
+                        </div>
+                        <div>
+                            <label for="report-passport" class="block text-sm font-medium mb-1" data-lang="report_passport_label">Серия и номер паспорта</label>
+                            <input type="text" id="report-passport" required class="w-full p-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-input">
+                        </div>
+                    </div>
+                     <div>
+                        <label for="report-whatsapp" class="block text-sm font-medium mb-1" data-lang="report_whatsapp_label">Номер WhatsApp</label>
+                        <input type="tel" id="report-whatsapp" required class="w-full p-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-input">
+                    </div>
+                    <div>
+                        <label for="report-description" class="block text-sm font-medium mb-1" data-lang="report_details_label">Подробное описание</label>
+                        <textarea id="report-description" required rows="3" class="w-full p-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-input"></textarea>
+                    </div>
+
+                    <div class="flex justify-end items-center gap-4 pt-2">
+                        <button type="button" id="close-report-modal-btn" class="control-btn px-4" data-lang="report_cancel_button">Отмена</button>
+                        <button type="submit" id="submit-report-btn" class="control-btn px-4 text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400">
+                            <span data-lang="report_submit_button">Отправить</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div id="report-success-view" class="hidden p-8 text-center">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-16 w-16 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 class="text-xl font-semibold mt-4" data-lang="report_success_title">Спасибо!</h3>
+                <p class="mt-2" style="color: var(--text-muted);" data-lang="report_success_message">Ваше сообщение отправлено. Мы изучим проблему.</p>
+                <button id="close-success-btn" class="mt-6 control-btn px-6 text-white bg-blue-600 hover:bg-blue-700" data-lang="report_close_button">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Firebase SDK and App Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where, doc, getDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        // --- Firebase Config ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBsAhLieT0jwBMBR469ttWAm2vOMnAlA-k",
+            authDomain: "raspisanie-f58f2.firebaseapp.com",
+            projectId: "raspisanie-f58f2",
+            storageBucket: "raspisanie-f58f2.appspot.com",
+            messagingSenderId: "650911906240",
+            appId: "1:650911906240:web:3eda512628964ca1217025",
+            measurementId: "G-NY5RDDQJJE"
+        };
+
+        // --- App Initialization ---
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // --- State ---
+        const cache = { faculties: [], specialties: [], courses: [], groups: [], isLoaded: false };
+        let currentLang = 'ru';
+        let currentGroupId = null;
+        let currentGroupName = null;
+
+        // --- DOM Elements ---
+        const elements = {
+            facultySelect: document.getElementById('faculty'),
+            specialtySelect: document.getElementById('specialty'),
+            courseSelect: document.getElementById('course'),
+            groupSelect: document.getElementById('group'),
+            scheduleDisplayArea: document.getElementById('schedule-display-area'),
+            scheduleContainer: document.getElementById('schedule-container'),
+            examsContainer: document.getElementById('exams-container'),
+            scheduleTitle: document.getElementById('schedule-title'),
+            placeholder: document.getElementById('placeholder'),
+            yearEl: document.getElementById('current-year'),
+            burgerBtn: document.getElementById('burger-btn'),
+            mobileMenu: document.getElementById('mobile-menu'),
+            closeMenuBtn: document.getElementById('close-menu-btn'),
+            themeColorMeta: document.getElementById('theme-color-meta'),
+            tabLessons: document.getElementById('tab-lessons'),
+            tabExams: document.getElementById('tab-exams'),
+            themeSwitchers: [document.getElementById('theme-switcher-desktop'), document.getElementById('theme-switcher-mobile')],
+            themeIcons: {
+                light: [document.getElementById('theme-icon-light-desktop'), document.getElementById('theme-icon-light-mobile')],
+                dark: [document.getElementById('theme-icon-dark-desktop'), document.getElementById('theme-icon-dark-mobile')]
+            },
+            langButtons: {
+                ru: [document.getElementById('lang-ru-desktop'), document.getElementById('lang-ru-mobile')],
+                tj: [document.getElementById('lang-tj-desktop'), document.getElementById('lang-tj-mobile')],
+                en: [document.getElementById('lang-en-desktop'), document.getElementById('lang-en-mobile')]
+            },
+            maintenanceNotice: document.getElementById('maintenance-notice'),
+            mainContent: document.getElementById('main-content'),
+            reportErrorBtn: document.getElementById('report-error-btn'),
+            reportModalContainer: document.getElementById('report-modal-container'),
+            closeReportModalBtn: document.getElementById('close-report-modal-btn'),
+            reportForm: document.getElementById('report-form'),
+            submitReportBtn: document.getElementById('submit-report-btn'),
+            reportFormView: document.getElementById('report-form-view'),
+            reportSuccessView: document.getElementById('report-success-view'),
+            closeSuccessBtn: document.getElementById('close-success-btn'),
+            // Report Form Fields
+            reportFaculty: document.getElementById('report-faculty'),
+            reportSpecialty: document.getElementById('report-specialty'),
+            reportCourse: document.getElementById('report-course'),
+            reportGroup: document.getElementById('report-group'),
+            reportDay: document.getElementById('report-day'),
+            reportLesson: document.getElementById('report-lesson'),
+            reportFullname: document.getElementById('report-fullname'),
+            reportPassport: document.getElementById('report-passport'),
+            reportWhatsapp: document.getElementById('report-whatsapp'),
+            reportDescription: document.getElementById('report-description')
+        };
+
+        // --- Translations ---
+        const translations = {
+            ru: {
+                page_title: "Расписание | ХГУ имени академика Б. Гафурова",
+                university_name: "ХГУ имени Б. Гафурова",
+                university_subtitle: "Электронное расписание",
+                search_title: "Поиск расписания",
+                faculty_label: "Факультет",
+                specialty_label: "Специальность",
+                course_label: "Курс",
+                group_label: "Группа",
+                footer_text: "Худжандский государственный университет имени академика Б. Ғафурова. Все права защищены.",
+                select_faculty: "Выберите факультет",
+                select_specialty: "Выберите специальность",
+                select_course: "Выберите курс",
+                select_group: "Выберите группу",
+                select_day: "Выберите день",
+                select_faculty_first: "Сначала выберите факультет",
+                select_specialty_first: "Сначала выберите специальность",
+                select_course_first: "Сначала выберите курс",
+                loader_connecting: "Подключение к сервису...",
+                loader_optimizing: "Оптимизация загрузки...",
+                initial_placeholder_title: "Ваше расписание появится здесь",
+                initial_placeholder_msg: "Пожалуйста, используйте фильтры выше.",
+                schedule_for_group: "Расписание для группы:",
+                no_schedule: "Для этой группы нет сохраненного расписания.",
+                no_exams: "Для этой группы нет расписания экзаменов.",
+                error_network_title: "Ошибка сети",
+                error_network_msg: "Не удалось загрузить данные. Попробуйте обновить страницу.",
+                error_auth_title: "Ошибка аутентификации",
+                error_auth_msg: "Не удалось подключиться к базе данных. Проверьте соединение с интернетом.",
+                error_schedule_load_title: "Ошибка загрузки",
+                error_schedule_load_msg: "Не удалось получить расписание для выбранной группы.",
+                monday: "Понедельник", tuesday: "Вторник", wednesday: "Среда",
+                thursday: "Четверг", friday: "Пятница", saturday: "Суббота",
+                auditorium: "Аудитория:",
+                menu_title: "Настройки",
+                theme_title: "Тема",
+                theme_toggle: "Сменить тему",
+                language_title: "Язык",
+                lessons_tab: "Занятия",
+                exams_tab: "Экзамены",
+                report_error_button: "Ошибка в расписании?",
+                report_modal_title: "Сообщить об ошибке",
+                report_faculty_label: "Факультет",
+                report_specialty_label: "Специальность",
+                report_course_label: "Курс",
+                report_group_label: "Группа",
+                report_day_label: "День недели",
+                report_lesson_label: "Номер урока",
+                report_passport_label: "Серия и номер паспорта",
+                report_fullname_label: "ФИО",
+                report_whatsapp_label: "Номер WhatsApp",
+                report_details_label: "Подробное описание",
+                report_submit_button: "Отправить",
+                report_cancel_button: "Отмена",
+                report_submitting: "Отправка...",
+                report_success_title: "Спасибо!",
+                report_success_message: "Ваше сообщение отправлено. Мы изучим проблему.",
+                report_close_button: "Закрыть"
+            },
+            tj: {
+                page_title: "Ҷадвал | ДДХ ба номи академик Б. Ғафуров",
+                university_name: "ДДХ ба номи Б. Ғафуров",
+                university_subtitle: "Ҷадвали электронӣ",
+                search_title: "Ҷустуҷӯи ҷадвал",
+                faculty_label: "Факултет",
+                specialty_label: "Ихтисос",
+                course_label: "Курс",
+                group_label: "Гурӯҳ",
+                footer_text: "Донишгоҳи давлатии Хуҷанд ба номи академик Б. Ғафуров. Ҳамаи ҳуқуқҳо маҳфузанд.",
+                select_faculty: "Факултетро интихоб кунед",
+                select_specialty: "Ихтисосро интихоб кунед",
+                select_course: "Курсро интихоб кунед",
+                select_group: "Гурӯҳро интихоб кунед",
+                select_day: "Рӯзро интихоб кунед",
+                select_faculty_first: "Аввал факултетро интихоб кунед",
+                select_specialty_first: "Аввал ихтисосро интихоб кунед",
+                select_course_first: "Аввал курсро интихоб кунед",
+                loader_connecting: "Пайвастшавӣ ба хидмат...",
+                loader_optimizing: "Оптимизатсияи боргирӣ...",
+                initial_placeholder_title: "Ҷадвали шумо дар ин ҷо пайдо мешавад",
+                initial_placeholder_msg: "Лутфан, филтрҳои болоро истифода баред.",
+                schedule_for_group: "Ҷадвал барои гурӯҳи:",
+                no_schedule: "Барои ин гурӯҳ ҷадвали сабтшуда вуҷуд надорад.",
+                no_exams: "Барои ин гурӯҳ ҷадвали имтиҳонҳо вуҷуд надорад.",
+                error_network_title: "Хатогии шабака",
+                error_network_msg: "Маълумотро боргирӣ карда натавонист. Саҳифаро нав кунед.",
+                error_auth_title: "Хатогии аутентификатсия",
+                error_auth_msg: "Ба пойгоҳи додаҳо пайваст шуда натавонист. Пайвасти интернетро санҷед.",
+                error_schedule_load_title: "Хатогии боргирӣ",
+                error_schedule_load_msg: "Ҷадвали гурӯҳи интихобшударо гирифта натавонист.",
+                monday: "Душанбе", tuesday: "Сешанбе", wednesday: "Чоршанбе",
+                thursday: "Панҷшанбе", friday: "Ҷумъа", saturday: "Шанбе",
+                auditorium: "Синфхона:",
+                menu_title: "Танзимот",
+                theme_title: "Мавзӯъ",
+                theme_toggle: "Иваз кардани мавзӯъ",
+                language_title: "Забон",
+                lessons_tab: "Дарсҳо",
+                exams_tab: "Имтиҳонҳо",
+                report_error_button: "Хатогӣ дар ҷадвал?",
+                report_modal_title: "Дар бораи хатогӣ хабар диҳед",
+                report_faculty_label: "Факултет",
+                report_specialty_label: "Ихтисос",
+                report_course_label: "Курс",
+                report_group_label: "Гурӯҳ",
+                report_day_label: "Рӯзи ҳафта",
+                report_lesson_label: "Рақами дарс",
+                report_passport_label: "Силсила ва рақами шиноснома",
+                report_fullname_label: "Ному насаб",
+                report_whatsapp_label: "Рақами WhatsApp",
+                report_details_label: "Тавсифи муфассал",
+                report_submit_button: "Ирсол",
+                report_cancel_button: "Бекор кардан",
+                report_submitting: "Ирсол...",
+                report_success_title: "Ташаккур!",
+                report_success_message: "Паёми шумо фиристода шуд. Мо мушкилотро меомӯзем.",
+                report_close_button: "Пӯшидан"
+            },
+            en: {
+                page_title: "Schedule | KSU named after academician B. Gafurov",
+                university_name: "KSU named after B. Gafurov",
+                university_subtitle: "Electronic Schedule",
+                search_title: "Schedule Search",
+                faculty_label: "Faculty",
+                specialty_label: "Specialty",
+                course_label: "Course",
+                group_label: "Group",
+                footer_text: "Khujand State University named after academician B. Gafurov. All rights reserved.",
+                select_faculty: "Select a faculty",
+                select_specialty: "Select a specialty",
+                select_course: "Select a course",
+                select_group: "Select a group",
+                select_day: "Select a day",
+                select_faculty_first: "First select a faculty",
+                select_specialty_first: "First select a specialty",
+                select_course_first: "First select a course",
+                loader_connecting: "Connecting to service...",
+                loader_optimizing: "Optimizing load...",
+                initial_placeholder_title: "Your schedule will appear here",
+                initial_placeholder_msg: "Please use the filters above.",
+                schedule_for_group: "Schedule for group:",
+                no_schedule: "There is no saved schedule for this group.",
+                no_exams: "There is no exam schedule for this group.",
+                error_network_title: "Network Error",
+                error_network_msg: "Failed to load data. Please try refreshing the page.",
+                error_auth_title: "Authentication Error",
+                error_auth_msg: "Could not connect to the database. Check your internet connection.",
+                error_schedule_load_title: "Loading Error",
+                error_schedule_load_msg: "Failed to get the schedule for the selected group.",
+                monday: "Monday", tuesday: "Tuesday", wednesday: "Wednesday",
+                thursday: "Thursday", friday: "Friday", saturday: "Saturday",
+                auditorium: "Auditorium:",
+                menu_title: "Settings",
+                theme_title: "Theme",
+                theme_toggle: "Change theme",
+                language_title: "Language",
+                lessons_tab: "Lessons",
+                exams_tab: "Exams",
+                report_error_button: "Error in schedule?",
+                report_modal_title: "Report an Error",
+                report_faculty_label: "Faculty",
+                report_specialty_label: "Specialty",
+                report_course_label: "Course",
+                report_group_label: "Group",
+                report_day_label: "Day of the week",
+                report_lesson_label: "Lesson number",
+                report_passport_label: "Passport series and number",
+                report_fullname_label: "Full Name",
+                report_whatsapp_label: "WhatsApp Number",
+                report_details_label: "Detailed description",
+                report_submit_button: "Submit",
+                report_cancel_button: "Cancel",
+                report_submitting: "Submitting...",
+                report_success_title: "Thank you!",
+                report_success_message: "Your message has been sent. We will look into the issue.",
+                report_close_button: "Close"
+            }
+        };
+
+        // --- Theme Switcher ---
+        function setTheme(theme) {
+            localStorage.setItem('theme', theme);
+            document.documentElement.setAttribute('data-theme', theme);
+            if (theme === 'dark') {
+                elements.themeIcons.light.forEach(icon => icon.classList.add('hidden'));
+                elements.themeIcons.dark.forEach(icon => icon.classList.remove('hidden'));
+                elements.themeColorMeta.setAttribute('content', '#111827');
+            } else {
+                elements.themeIcons.light.forEach(icon => icon.classList.remove('hidden'));
+                elements.themeIcons.dark.forEach(icon => icon.classList.add('hidden'));
+                elements.themeColorMeta.setAttribute('content', '#050398');
+            }
+        }
+
+        elements.themeSwitchers.forEach(switcher => {
+            switcher.addEventListener('click', () => {
+                const currentTheme = localStorage.getItem('theme') || 'light';
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                setTheme(newTheme);
+            });
+        });
+
+
+        // --- Language Functions ---
+        function setLanguage(lang) {
+            if (!translations[lang]) return;
+            currentLang = lang;
+            localStorage.setItem('preferredLang', lang);
+            document.documentElement.lang = lang;
+
+            document.querySelectorAll('[data-lang]').forEach(el => {
+                const key = el.getAttribute('data-lang');
+                if (translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+
+            Object.values(elements.langButtons).forEach(btnArray => {
+                btnArray.forEach(btn => btn.classList.remove('active'));
+            });
+            elements.langButtons[lang].forEach(btn => btn.classList.add('active'));
+
+            resetAllSelects();
+            if(cache.isLoaded) {
+                populateSelect(elements.facultySelect, cache.faculties, translations[currentLang].select_faculty);
+                restoreSelections();
+            }
+        }
+
+        // --- Save & Restore State ---
+        function saveSelection() {
+            const selection = {
+                faculty: elements.facultySelect.value,
+                specialty: elements.specialtySelect.value,
+                course: elements.courseSelect.value,
+                group: elements.groupSelect.value,
+            };
+            localStorage.setItem('savedSelection', JSON.stringify(selection));
+        }
+
+        async function restoreSelections() {
+            const savedSelection = JSON.parse(localStorage.getItem('savedSelection'));
+            if (!savedSelection || !cache.isLoaded) {
+                showInitialMessage();
+                return;
+            }
+
+            if (savedSelection.faculty) {
+                const facultyDoc = await getDoc(doc(db, "faculties", savedSelection.faculty));
+                if (facultyDoc.exists() && facultyDoc.data().maintenanceMode) {
+                    toggleMainContent(true);
+                    return;
+                }
+                elements.facultySelect.value = savedSelection.faculty;
+                populateSpecialtiesFromCache(savedSelection.faculty);
+            }
+
+            if (savedSelection.specialty) {
+                elements.specialtySelect.value = savedSelection.specialty;
+                populateCoursesFromCache(savedSelection.specialty);
+            }
+
+            if (savedSelection.course) {
+                elements.courseSelect.value = savedSelection.course;
+                populateGroupsFromCache(savedSelection.course);
+            }
+
+            if (savedSelection.group) {
+                elements.groupSelect.value = savedSelection.group;
+                const selectedGroup = cache.groups.find(g => g.id === savedSelection.group);
+                if (selectedGroup) {
+                    currentGroupId = selectedGroup.id;
+                    currentGroupName = selectedGroup.name;
+                    switchTab('lessons');
+                } else {
+                    showInitialMessage();
+                }
+            } else {
+                 showInitialMessage();
+            }
+        }
+
+
+        // --- Event Listeners ---
+        Object.keys(elements.langButtons).forEach(lang => {
+            elements.langButtons[lang].forEach(btn => {
+                btn.addEventListener('click', () => {
+                    setLanguage(lang);
+                    closeMenu();
+                });
+            });
+        });
+
+        elements.facultySelect.addEventListener('change', async () => {
+            const selectedFacultyId = elements.facultySelect.value;
+            if (selectedFacultyId) {
+                const facultyDoc = await getDoc(doc(db, "faculties", selectedFacultyId));
+                if (facultyDoc.exists() && facultyDoc.data().maintenanceMode) {
+                    toggleMainContent(true);
+                } else {
+                    toggleMainContent(false);
+                    resetSelect(elements.specialtySelect, translations[currentLang].select_specialty_first);
+                    resetSelect(elements.courseSelect, translations[currentLang].select_course_first);
+                    resetSelect(elements.groupSelect, translations[currentLang].select_group);
+                    showInitialMessage();
+                    populateSpecialtiesFromCache(selectedFacultyId);
+                }
+            } else {
+                toggleMainContent(false);
+            }
+            saveSelection();
+        });
+
+        elements.specialtySelect.addEventListener('change', () => {
+            const selectedSpecialtyId = elements.specialtySelect.value;
+            resetSelect(elements.courseSelect, translations[currentLang].select_course_first);
+            resetSelect(elements.groupSelect, translations[currentLang].select_group);
+            showInitialMessage();
+            if (selectedSpecialtyId) {
+                populateCoursesFromCache(selectedSpecialtyId);
+            }
+            saveSelection();
+        });
+
+        elements.courseSelect.addEventListener('change', () => {
+            const selectedCourseId = elements.courseSelect.value;
+            resetSelect(elements.groupSelect, translations[currentLang].select_group);
+            showInitialMessage();
+            if (selectedCourseId) {
+                populateGroupsFromCache(selectedCourseId);
+            }
+            saveSelection();
+        });
+
+        elements.groupSelect.addEventListener('change', () => {
+            currentGroupId = elements.groupSelect.value;
+            if (currentGroupId) {
+                currentGroupName = elements.groupSelect.options[elements.groupSelect.selectedIndex].text;
+                switchTab('lessons');
+            } else {
+                showInitialMessage();
+            }
+            saveSelection();
+        });
+
+        // --- Mobile Menu Toggle ---
+        function closeMenu() {
+            elements.mobileMenu.classList.remove('is-visible');
+        }
+
+        elements.burgerBtn.addEventListener('click', () => {
+            elements.mobileMenu.classList.add('is-visible');
+        });
+        elements.closeMenuBtn.addEventListener('click', closeMenu);
+        elements.mobileMenu.addEventListener('click', (e) => {
+            if (e.target === elements.mobileMenu) {
+                 closeMenu();
+            }
+        });
+
+        // --- Report Modal Logic ---
+        function populateReportModalSelects() {
+            // Populate Faculty
+            populateSelect(elements.reportFaculty, cache.faculties, translations[currentLang].select_faculty);
+            elements.reportFaculty.value = elements.facultySelect.value;
+
+            // Populate Day
+            const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+            elements.reportDay.innerHTML = `<option value="">${translations[currentLang].select_day}</option>`;
+            days.forEach(dayKey => {
+                const option = document.createElement('option');
+                option.value = translations['ru'][dayKey]; // Send Russian value to DB
+                option.textContent = translations[currentLang][dayKey];
+                elements.reportDay.appendChild(option);
+            });
+
+            // Trigger changes to populate dependent dropdowns
+            if (elements.reportFaculty.value) {
+                const filteredSpecialties = cache.specialties.filter(s => s.facultyId === elements.reportFaculty.value);
+                populateSelect(elements.reportSpecialty, filteredSpecialties, translations[currentLang].select_specialty);
+                elements.reportSpecialty.value = elements.specialtySelect.value;
+            }
+            if (elements.reportSpecialty.value) {
+                const filteredCourses = cache.courses.filter(c => c.specialtyId === elements.reportSpecialty.value);
+                populateSelect(elements.reportCourse, filteredCourses, translations[currentLang].select_course);
+                elements.reportCourse.value = elements.courseSelect.value;
+            }
+             if (elements.reportCourse.value) {
+                const filteredGroups = cache.groups.filter(g => g.courseId === elements.reportCourse.value);
+                populateSelect(elements.reportGroup, filteredGroups, translations[currentLang].select_group);
+                elements.reportGroup.value = elements.groupSelect.value;
+            }
+        }
+
+        elements.reportFaculty.addEventListener('change', () => {
+            const facultyId = elements.reportFaculty.value;
+            const filtered = cache.specialties.filter(s => s.facultyId === facultyId);
+            populateSelect(elements.reportSpecialty, filtered, translations[currentLang].select_specialty);
+            resetSelect(elements.reportCourse, translations[currentLang].select_course_first);
+            resetSelect(elements.reportGroup, translations[currentLang].select_group);
+        });
+         elements.reportSpecialty.addEventListener('change', () => {
+            const specialtyId = elements.reportSpecialty.value;
+            const filtered = cache.courses.filter(c => c.specialtyId === specialtyId);
+            populateSelect(elements.reportCourse, filtered, translations[currentLang].select_course);
+             resetSelect(elements.reportGroup, translations[currentLang].select_group);
+        });
+        elements.reportCourse.addEventListener('change', () => {
+            const courseId = elements.reportCourse.value;
+            const filtered = cache.groups.filter(g => g.courseId === courseId);
+            populateSelect(elements.reportGroup, filtered, translations[currentLang].select_group);
+        });
+
+
+        function openReportModal() {
+            populateReportModalSelects();
+            elements.reportModalContainer.classList.add('is-visible');
+        }
+        function closeReportModal() {
+            elements.reportModalContainer.classList.remove('is-visible');
+            setTimeout(() => {
+                elements.reportFormView.classList.remove('hidden');
+                elements.reportSuccessView.classList.add('hidden');
+                elements.reportForm.reset();
+            }, 300);
+        }
+
+        elements.reportErrorBtn.addEventListener('click', openReportModal);
+        elements.closeReportModalBtn.addEventListener('click', closeReportModal);
+        elements.closeSuccessBtn.addEventListener('click', closeReportModal);
+        elements.reportModalContainer.addEventListener('click', (e) => {
+            if (e.target === elements.reportModalContainer) {
+                 closeReportModal();
+            }
+        });
+
+        elements.reportForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtnSpan = elements.submitReportBtn.querySelector('span');
+            const reportData = {
+                faculty: elements.reportFaculty.options[elements.reportFaculty.selectedIndex].text,
+                specialty: elements.reportSpecialty.options[elements.reportSpecialty.selectedIndex].text,
+                course: elements.reportCourse.options[elements.reportCourse.selectedIndex].text,
+                group: elements.reportGroup.options[elements.reportGroup.selectedIndex].text,
+                day: elements.reportDay.value,
+                lesson: elements.reportLesson.value,
+                fullname: elements.reportFullname.value,
+                passport: elements.reportPassport.value,
+                whatsapp: elements.reportWhatsapp.value,
+                description: elements.reportDescription.value,
+                createdAt: serverTimestamp(),
+                status: 'new'
+            };
+
+            elements.submitReportBtn.disabled = true;
+            submitBtnSpan.textContent = translations[currentLang].report_submitting;
+
+            try {
+                await addDoc(collection(db, "error_reports"), reportData);
+                elements.reportFormView.classList.add('hidden');
+                elements.reportSuccessView.classList.remove('hidden');
+            } catch (error) {
+                console.error("Error sending report: ", error);
+                alert("Failed to send report. Please try again.");
+            } finally {
+                elements.submitReportBtn.disabled = false;
+                submitBtnSpan.textContent = translations[currentLang].report_submit_button;
+            }
+        });
+
+
+        // --- Tab Switching ---
+        elements.tabLessons.addEventListener('click', () => switchTab('lessons'));
+        elements.tabExams.addEventListener('click', () => switchTab('exams'));
+
+        function switchTab(tab) {
+            if (tab === 'lessons') {
+                elements.tabLessons.classList.add('active');
+                elements.tabExams.classList.remove('active');
+                elements.scheduleContainer.classList.remove('hidden');
+                elements.examsContainer.classList.add('hidden');
+                fetchAndDisplaySchedule();
+            } else {
+                elements.tabExams.classList.add('active');
+                elements.tabLessons.classList.remove('active');
+                elements.examsContainer.classList.remove('hidden');
+                elements.scheduleContainer.classList.add('hidden');
+                fetchAndDisplayExams();
+            }
+        }
+
+
+        // --- UI Functions ---
+        function toggleMainContent(inMaintenance) {
+            if (inMaintenance) {
+                elements.mainContent.classList.add('hidden');
+                elements.maintenanceNotice.classList.remove('hidden');
+            } else {
+                elements.mainContent.classList.remove('hidden');
+                elements.maintenanceNotice.classList.add('hidden');
+            }
+        }
+
+        function showLoader(message) {
+            elements.placeholder.innerHTML = `<div class="loader mx-auto"></div><p class="mt-4" style="color: var(--text-muted);">${message}</p>`;
+            elements.placeholder.classList.remove('hidden');
+            elements.scheduleDisplayArea.classList.add('hidden');
+        }
+
+        function showSkeletonLoader(container) {
+            elements.scheduleTitle.textContent = '';
+            container.innerHTML = Array(3).fill('').map(() => `
+                <div class="card p-4 space-y-4">
+                    <div class="skeleton h-6 w-1/2"></div>
+                    <div class="space-y-3">
+                        ${Array(3).fill('').map(() => `<div class="p-3 rounded-md space-y-2" style="background-color: var(--bg-color)"><div class="skeleton h-4 w-3/4"></div><div class="skeleton h-3 w-1/4"></div><div class="skeleton h-3 w-1/2"></div></div>`).join('')}
+                    </div>
+                </div>`).join('');
+            elements.placeholder.classList.add('hidden');
+            elements.scheduleDisplayArea.classList.remove('hidden');
+        }
+
+        function showMessage(type, title, message) {
+            const icon = {
+                info: `<svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12" style="color: var(--text-muted);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>`,
+                error: `<svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`
+            };
+            const color = type === 'error' ? 'text-red-700' : 'var(--text-color)';
+            elements.placeholder.innerHTML = `<h3 class="mt-2 text-lg font-medium" style="color: ${color};">${title}</h3><p class="mt-1 text-sm" style="color: var(--text-muted);">${message}</p><div class="mt-4">${icon[type]}</div>`;
+            elements.placeholder.classList.remove('hidden');
+            elements.scheduleDisplayArea.classList.add('hidden');
+        }
+
+        function showInitialMessage() {
+            showMessage('info', translations[currentLang].initial_placeholder_title, translations[currentLang].initial_placeholder_msg);
+        }
+
+        function populateSelect(selectElement, items, placeholderText) {
+            selectElement.innerHTML = `<option value="">${placeholderText}</option>`;
+            items.sort((a, b) => a.name.localeCompare(b.name, 'ru', { numeric: true }));
+            items.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.name;
+                selectElement.appendChild(option);
+            });
+            selectElement.disabled = items.length === 0;
+        }
+
+        function resetSelect(selectElement, placeholderText) {
+            selectElement.innerHTML = `<option value="">${placeholderText}</option>`;
+            selectElement.disabled = true;
+        }
+
+        function resetAllSelects() {
+            resetSelect(elements.facultySelect, translations[currentLang].select_faculty);
+            resetSelect(elements.specialtySelect, translations[currentLang].select_specialty_first);
+            resetSelect(elements.courseSelect, translations[currentLang].select_course_first);
+            resetSelect(elements.groupSelect, translations[currentLang].select_group);
+        }
+
+        // --- Data Fetching & Caching ---
+        async function fetchAllInitialData() {
+            if (cache.isLoaded) return;
+
+            showLoader(translations[currentLang].loader_optimizing);
+            try {
+                const [facultiesSnapshot, specialtiesSnapshot, coursesSnapshot, groupsSnapshot] = await Promise.all([
+                    getDocs(collection(db, "faculties")), getDocs(collection(db, "specialties")),
+                    getDocs(collection(db, "courses")), getDocs(collection(db, "groups"))
+                ]);
+
+                cache.faculties = facultiesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                cache.specialties = specialtiesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                cache.courses = coursesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                cache.groups = groupsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                cache.isLoaded = true;
+
+                populateSelect(elements.facultySelect, cache.faculties, translations[currentLang].select_faculty);
+                restoreSelections();
+
+            } catch (error) {
+                console.error("Error fetching initial data: ", error);
+                showMessage('error', translations[currentLang].error_network_title, translations[currentLang].error_network_msg);
+            }
+        }
+
+        function populateSpecialtiesFromCache(facultyId) {
+            const filtered = cache.specialties.filter(s => s.facultyId === facultyId);
+            populateSelect(elements.specialtySelect, filtered, translations[currentLang].select_specialty);
+        }
+
+        function populateCoursesFromCache(specialtyId) {
+            const filtered = cache.courses.filter(c => c.specialtyId === specialtyId);
+            populateSelect(elements.courseSelect, filtered, translations[currentLang].select_course);
+        }
+
+        function populateGroupsFromCache(courseId) {
+            const filtered = cache.groups.filter(g => g.courseId === courseId);
+            populateSelect(elements.groupSelect, filtered, translations[currentLang].select_group);
+        }
+
+        async function fetchAndDisplaySchedule() {
+            if (!currentGroupId) return;
+            showSkeletonLoader(elements.scheduleContainer);
+            try {
+                const q = query(collection(db, "schedules"), where("groupId", "==", currentGroupId));
+                const querySnapshot = await getDocs(q);
+                const schedule = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                displaySchedule(schedule);
+            } catch (error) {
+                console.error(`Error fetching schedule for group ${currentGroupId}: `, error);
+                showMessage('error', translations[currentLang].error_schedule_load_title, translations[currentLang].error_schedule_load_msg);
+            }
+        }
+
+        async function fetchAndDisplayExams() {
+            if (!currentGroupId) return;
+            showSkeletonLoader(elements.examsContainer);
+            try {
+                const q = query(collection(db, "exams"), where("groupId", "==", currentGroupId));
+                const querySnapshot = await getDocs(q);
+                const exams = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                displayExams(exams);
+            } catch (error) {
+                console.error(`Error fetching exams for group ${currentGroupId}: `, error);
+                showMessage('error', translations[currentLang].error_schedule_load_title, translations[currentLang].error_schedule_load_msg);
+            }
+        }
+
+        // --- Time Helper Functions ---
+        function getCurrentKhujandTimeInfo() {
+            // Khujand is in UTC+5 timezone (Asia/Dushanbe)
+            const nowInTJT = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Dushanbe" }));
+
+            const dayIndex = nowInTJT.getDay(); // 0=Sunday, 1=Monday, ...
+            const dayMap = {
+                1: "Понедельник", 2: "Вторник", 3: "Среда",
+                4: "Четверг", 5: "Пятница", 6: "Суббота"
+            };
+            const currentDayName = dayMap[dayIndex] || null;
+
+            const currentHours = nowInTJT.getHours();
+            const currentMinutes = nowInTJT.getMinutes();
+            const currentTimeInMinutes = currentHours * 60 + currentMinutes;
+
+            return { currentDayName, currentTimeInMinutes };
+        }
+
+        function isCurrentLesson(lessonTime, currentTimeInMinutes) {
+            try {
+                if (!lessonTime || !lessonTime.includes('-')) return false;
+                const [start, end] = lessonTime.split('-');
+                const [startHour, startMinute] = start.trim().split(':').map(Number);
+                const [endHour, endMinute] = end.trim().split(':').map(Number);
+
+                const startTimeInMinutes = startHour * 60 + startMinute;
+                const endTimeInMinutes = endHour * 60 + endMinute;
+
+                return currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes <= endTimeInMinutes;
+            } catch (error) {
+                console.error("Error parsing lesson time:", lessonTime, error);
+                return false;
+            }
+        }
+
+        // --- Display Logic ---
+        function displaySchedule(schedule) {
+            elements.scheduleTitle.textContent = `${translations[currentLang].schedule_for_group} ${currentGroupName}`;
+            const scheduleGrid = elements.scheduleContainer;
+            scheduleGrid.innerHTML = '';
+
+            const { currentDayName, currentTimeInMinutes } = getCurrentKhujandTimeInfo();
+
+            const groupedByDay = schedule.reduce((acc, lesson) => {
+                (acc[lesson.day] = acc[lesson.day] || []).push(lesson);
+                return acc;
+            }, {});
+
+            const dayKeys = { "Понедельник": "monday", "Вторник": "tuesday", "Среда": "wednesday", "Четверг": "thursday", "Пятница": "friday", "Суббота": "saturday" };
+            const daysOrder = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
+
+            let hasLessons = false;
+
+            daysOrder.forEach(day => {
+                if (groupedByDay[day] && groupedByDay[day].length > 0) {
+                    groupedByDay[day].sort((a, b) => a.time.localeCompare(b.time));
+                    hasLessons = true;
+
+                    const dayCard = document.createElement('div');
+                    const isToday = day === currentDayName;
+
+                    dayCard.className = 'card p-4 flex flex-col';
+                    if (isToday) {
+                        dayCard.style.cssText = 'border: 2px solid #3B82F6; box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.4);';
+                    }
+
+                    const dayKey = dayKeys[day];
+                    const headerClass = isToday ? 'text-blue-500' : 'text-blue-600';
+
+                    let lessonsHtml = `<h4 class="text-lg font-bold mb-3 ${headerClass} border-b pb-2" style="border-color: var(--select-border);">${translations[currentLang][dayKey]}</h4><ul class="space-y-3 mt-2 flex-grow">`;
+                    groupedByDay[day].forEach(lesson => {
+                        let typeHtml = '';
+                        if (lesson.type) {
+                            const typeClass = lesson.type === 'практический' ? 'bg-blue-500' : 'bg-green-500';
+                            typeHtml = `<span class="text-xs font-normal text-white ${typeClass} rounded-full px-2 py-0.5 ml-2 whitespace-nowrap">${lesson.type}</span>`;
+                        }
+
+                        const isNow = isToday && isCurrentLesson(lesson.time, currentTimeInMinutes);
+                        const liStyle = isNow
+                            ? `background-color: var(--highlight-bg); border-left: 4px solid var(--highlight-border); padding-left: calc(0.75rem - 4px);`
+                            : 'background-color: var(--bg-color)';
+
+                        lessonsHtml += `
+                            <li class="text-sm p-3 rounded-md transition-all duration-300" style="${liStyle}">
+                                <div class="flex justify-between items-start">
+                                    <p class="font-semibold">${lesson.subject}</p>
+                                    ${typeHtml}
+                                </div>
+                                <p class="mt-1" style="color: var(--text-muted)">${lesson.time}</p>
+                                <p style="color: var(--text-muted)">${lesson.teacher}</p>
+                                <p class="font-medium" style="color: var(--text-muted)">${translations[currentLang].auditorium} ${lesson.room}</p>
+                            </li>`;
+                    });
+                    lessonsHtml += '</ul>';
+                    dayCard.innerHTML = lessonsHtml;
+                    scheduleGrid.appendChild(dayCard);
+                }
+            });
+
+            if (!hasLessons) {
+                 scheduleGrid.innerHTML = `<div class="card p-6 text-center col-span-1 md:col-span-2 lg:col-span-3"><p style="color: var(--text-muted)">${translations[currentLang].no_schedule}</p></div>`;
+            }
+        }
+
+        function displayExams(exams) {
+            elements.scheduleTitle.textContent = `${translations[currentLang].schedule_for_group} ${currentGroupName}`;
+            const examsGrid = elements.examsContainer;
+            examsGrid.innerHTML = '';
+
+            if (!exams || exams.length === 0) {
+                examsGrid.innerHTML = `<div class="card p-6 text-center col-span-1 md:col-span-2 lg:col-span-3"><p style="color: var(--text-muted)">${translations[currentLang].no_exams}</p></div>`;
+                return;
+            }
+
+            const daysOrder = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
+            exams.sort((a,b) => daysOrder.indexOf(a.day) - daysOrder.indexOf(b.day) || a.time.localeCompare(b.time));
+
+            exams.forEach(exam => {
+                const examCard = document.createElement('div');
+                examCard.className = 'card p-4 flex flex-col';
+
+                examCard.innerHTML = `
+                    <h4 class="text-lg font-bold mb-3 text-purple-600 border-b pb-2" style="border-color: var(--select-border);">${exam.day}</h4>
+                    <ul class="space-y-3 mt-2 flex-grow">
+                        <li class="text-sm p-3 rounded-md" style="background-color: var(--bg-color)">
+                            <p class="font-semibold">${exam.subject}</p>
+                            <p class="mt-1" style="color: var(--text-muted)">${exam.time}</p>
+                            <p style="color: var(--text-muted)">${exam.teacher}</p>
+                            <p class="font-medium" style="color: var(--text-muted)">${translations[currentLang].auditorium} ${exam.room}</p>
+                        </li>
+                    </ul>
+                `;
+                examsGrid.appendChild(examCard);
+            });
+        }
+
+        // --- App Initialization ---
+        function init() {
+            // Set theme on initial load
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme) {
+                setTheme(savedTheme);
+            } else if (prefersDark) {
+                setTheme('dark');
+            } else {
+                setTheme('light');
+            }
+
+            elements.yearEl.textContent = new Date().getFullYear();
+            const savedLang = localStorage.getItem('preferredLang');
+            const initialLang = savedLang && translations[savedLang] ? savedLang : 'ru';
+            setLanguage(initialLang);
+
+            showLoader(translations[currentLang].loader_connecting);
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    fetchAllInitialData();
+                } else {
+                    signInAnonymously(auth).catch((error) => {
+                        console.error("Anonymous sign-in failed: ", error);
+                        showMessage('error', translations[currentLang].error_auth_title, translations[currentLang].error_auth_msg);
+                    });
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
